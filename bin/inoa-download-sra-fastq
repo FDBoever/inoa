@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+# -*- coding: utf-8
+
+# Use fastq-dump to pull down SRA reads
+# https://ncbi.github.io/sra-tools/fastq-dump.html
+# NOTE. copy and paste the terminal commands to new terminal windows and can simulate mutiple threads
+# Configured to use fasterq-dump: https://github.com/ncbi/sra-tools/wiki/HowTo:-fasterq-dump 16-June-2020
+
+
+# Create Conda environment and install everything inside!
+# path_to_fasterq_dump="/opt/sratoolkit/2.9.6/bin/"
+
+
+import sys
+import os
+import getopt
+import subprocess
+from inoa.txtcolors import textcolor
+
+
+def usage():
+    filename = os.path.basename(__file__)
+    print("""
+   usage: {file} [OPTIONS]
+
+   options:
+      -h, --help                  Print this usage info
+      -i, --input                 input file or directory
+      -o, --output                output directory
+   """.format(file=filename))
+
+
+def welcome():
+    filename = os.path.basename(__file__)
+    print("""
+    {file}
+    """.format(file=filename))
+
+
+def main(argv):
+    input_dir = 'default'
+    output_dir = 'default'
+    try:
+        opts, args = getopt.getopt(argv, "hi:o:", ["help", "input=", "output="])
+    except getopt.GetoptError as err:
+        print(str(err))
+        usage()
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif opt in ("-i", "--input"):
+            input_dir = arg
+        elif opt in ("-o", "--output"):
+            output_dir = arg
+    welcome()
+    print('input:', textcolor(input_dir, 'blue'))
+    print('output:', textcolor(output_dir, 'blue'))
+    execute_rscript(input_dir, output_dir)
+    print("done")
+
+
+def execute_rscript(input_dir, output_dir):
+    subprocess.call(['Rscript', 'script.R', input_dir, output_dir])
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

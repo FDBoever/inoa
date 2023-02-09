@@ -1,0 +1,98 @@
+#!/usr/bin/env python
+# -*- coding: utf-8
+import sys
+import os
+import getopt
+from pathlib import Path
+
+import inoa.utils as utils
+from inoa.txtcolors import textcolor
+
+# example
+# python ./bin/inoa-run-barrnap -i /Users/fdb/DATA/EukGenome_database/Hackl2020/ncbi_dataset/data/GCA_008330645.1/GCA_008330645.1_CrBVI_genomic.fna -o /Users/fdb/DATA/EukGenome_database/Hackl2020/ -k euk -l 0.15 -r 0.15
+
+# python ./bin/inoa-run-barrnap
+#   -i /Users/fdb/DATA/EukGenome_database/Hackl2020/ncbi_dataset/data/GCA_008330645.1/GCA_008330645.1_CrBVI_genomic.fna
+#   -o /Users/fdb/DATA/EukGenome_database/Hackl2020/
+#   -k euk
+#   -l 0.15
+#   -r 0.15
+
+
+def usage():
+    filename = os.path.basename(__file__)
+    print("""
+   usage: {file} [OPTIONS]
+
+   options:
+      -h, --help                  Print this usage info
+      -i, --input                 input file or directory
+      -o, --output                output directory
+      -k, --kingdom               kingdom, euk or bac
+      -l, --lencutoff             length cutoff (see barrnap)
+      -r, --reject                reject (see barrnap)
+   """.format(file=filename))
+
+
+def welcome():
+    filename = os.path.basename(__file__)
+    print("""
+    {file}
+    """.format(file=filename))
+
+
+def main(argv):
+    input_file = 'default'
+    output_dir = 'default'
+    kingdom = 'euk'
+    lencutoff = 0.5
+    reject = 0.5
+    try:
+        opts, args = getopt.getopt(argv, "hi:o:k:l:r:", ["help", "input=", "output=", "kingdom=", "lencutoff=", "reject="])
+    except getopt.GetoptError as err:
+        print(str(err))
+        usage()
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif opt in ("-i", "--input"):
+            input_file = arg
+        elif opt in ("-o", "--output"):
+            output_dir = arg
+        elif opt in ("-k", "--kingdom"):
+            kingdom = arg
+        elif opt in ("-l", "--lencutoff"):
+            lencutoff = arg
+        elif opt in ("-r", "--reject"):
+            reject = arg
+    welcome()
+
+    print('input:', textcolor(input_file, 'blue'))
+    print('output directory:', textcolor(output_dir, 'blue'))
+
+    #run-barrnap
+    basename_input = os.path.basename(input_file)
+    base_stem = Path(input_file).stem
+    tmp_outpath = output_dir + base_stem + ".barrnap.txt"
+    print('input_file:', textcolor(basename_input, 'blue'))
+    print('input_stem:', textcolor(base_stem, 'blue'))
+    print('output_file:', textcolor(tmp_outpath, 'blue'))
+    print('kingdom:', textcolor(kingdom, 'blue'))
+    print('lencutoff:', textcolor(lencutoff, 'blue'))
+    print('reject:', textcolor(reject, 'blue'))
+
+    cmd_line = ('barrnap --quiet --kingdom "%s" --lencutoff "%s" --reject "%s" "%s" > "%s"' % (
+                                            kingdom,
+                                            lencutoff,
+                                            reject,
+                                            input_file,
+                                            tmp_outpath))
+    print('Command:', textcolor(cmd_line, 'blue'))
+
+    utils.run_cmd(cmd_line)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

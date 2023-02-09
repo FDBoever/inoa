@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+# -*- coding: utf-8
+import sys
+import subprocess
+from inoa.errors import ConfigError
+
+
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(description='This is a template for parsing arguments to R')
+    parser.add_argument('-c', '--collection-id', metavar='COLLECTION-ID',
+                        help='Collections of splits (see the online documentation for examples).')
+    parser.add_argument('-p', '--profile-db', metavar="PROFILE_DB", required=True,
+                        help='Profile database.')
+    parser.add_argument('-a', '--annotation-db', required=True, metavar='ANNOTATION_DB',
+                        help='anvio annotation database.')
+    parser.add_argument('-o', '--output-directory', required=True,
+                        help='Directory path to store static summary files.')
+
+    args = parser.parse_args()
+    print('')
+    print('arguments')
+    for arg in vars(args):
+        print(arg, getattr(args, arg))
+
+    try:
+        print('')
+        print('should be good to go')
+        # summary = summarizer.Summarizer(args)
+        # summary.process()
+
+    except ConfigError as e:
+        print(e)
+        sys.exit(-1)
+
+if '__main__' == __name__:
+    main()

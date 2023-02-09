@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+# -*- coding: utf-8
+
+import sys
+import os
+import getopt
+
+
+def usage():
+    filename = os.path.basename(__file__)
+    print("""
+   usage: {file} [OPTIONS]
+
+   options:
+      -h, --help                  Print this usage info
+      -i, --input                 input file or directory
+      -o, --output                output directory
+   """.format(file=filename))
+
+
+def main(argv):
+    input_dir = 'default'
+    output_dir = 'default'
+    try:
+        opts, args = getopt.getopt(argv, "hi:o:", ["help", "input=", "output="])
+    except getopt.GetoptError as err:
+        print(str(err))
+        usage()
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif opt in ("-i", "--input"):
+            input_dir = arg
+        elif opt in ("-o", "--output"):
+            output_dir = arg
+    print('input:', input_dir)
+    print('output:', output_dir)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
