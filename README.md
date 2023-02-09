@@ -1,1 +1,1 @@
-#inoa - Integrated multi-omics data Analysis
+# inoaR - INtegrated multi-Omics data Analysis
